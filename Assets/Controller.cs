@@ -10,6 +10,9 @@ public class Controller : MonoBehaviour
     public float grav = 1f, velTransfer = 0.85f, startPush = 500f, tiltRate = 0.9f;
     private float activeForwardSpeed, activeStrafeSpeed, activeHoverSpeed;
     private float forwardAcceleration = 2.5f, strafeAcceleration = 2f, hoverAcceleration = 2f;
+    public Transform pen;
+    private Transform last;
+    public Vector3 penPos;
 
     private float lookRateSpeed = 90f;
     private Vector2 lookInput, screenCenter;
@@ -22,16 +25,24 @@ public class Controller : MonoBehaviour
         screenCenter.x = Screen.width * 0.5f;
         screenCenter.y = Screen.height * 0.5f;
         body.AddForce(transform.forward * startPush);
+        last = pen;
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
+
+        Vector3 p = pen.position;
+        penPos = transform.position - p;
+
         lookInput.x = Input.mousePosition.x;
         lookInput.y = Input.mousePosition.y;
 
-        float roll = (lookInput.x - screenCenter.x) / screenCenter.x;
-        float tilt = (lookInput.y - screenCenter.y) / screenCenter.y;
+        float roll = penPos.x / 5;
+        float tilt = penPos.y / 5;
+
+        // float roll = (lookInput.x - screenCenter.x) / screenCenter.x;
+        // float tilt = (lookInput.y - screenCenter.y) / screenCenter.y;
 
         if (body.velocity.magnitude < 1.5){
             //tilt += tiltRate * Time.deltaTime;
@@ -45,6 +56,8 @@ public class Controller : MonoBehaviour
         //transform.Rotate(-tilt * lookRateSpeed * Time.deltaTime, roll * lookRateSpeed * Time.deltaTime, 0f, Space.Self);
         transform.Rotate(transform.right, tilt * Time.deltaTime * lookRateSpeed, Space.World);
         transform.Rotate(transform.forward, -roll * Time.deltaTime * lookRateSpeed, Space.World);
+
+        //transform.Rotate(pen.rotation.eulerAngles.x, pen.rotation.eulerAngles.y, pen.rotation.eulerAngles.z, Space.World);
 
         // Covert falling speed to regular speed 
         Vector3 vertvel = body.velocity - Vector3.Exclude(transform.up, body.velocity);
