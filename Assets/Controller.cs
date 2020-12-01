@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
 public class Controller : MonoBehaviour
@@ -16,6 +17,7 @@ public class Controller : MonoBehaviour
 
     private float lookRateSpeed = 90f;
     private Vector2 lookInput, screenCenter;
+    public int score = 0;
 
 
     // Start is called before the first frame update
@@ -38,11 +40,11 @@ public class Controller : MonoBehaviour
         lookInput.x = Input.mousePosition.x;
         lookInput.y = Input.mousePosition.y;
 
-        float roll = penPos.x / 5;
-        float tilt = penPos.y / 5;
+        // float roll = penPos.x / 5;
+        // float tilt = penPos.y / 5;
 
-        // float roll = (lookInput.x - screenCenter.x) / screenCenter.x;
-        // float tilt = (lookInput.y - screenCenter.y) / screenCenter.y;
+        float roll = (lookInput.x - screenCenter.x) / screenCenter.x;
+        float tilt = (lookInput.y - screenCenter.y) / screenCenter.y;
 
         if (body.velocity.magnitude < 1.5){
             //tilt += tiltRate * Time.deltaTime;
@@ -79,7 +81,25 @@ public class Controller : MonoBehaviour
 
     void OnCollisionEnter(Collision collision)
     {
-        Debug.Log("IM HIT IM HIT");
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        if (collision.gameObject.tag == "ring") {
+            Debug.Log("RING");
+            Physics.IgnoreCollision(collision.collider, GetComponent<Collider>());
+        }
+        else {
+            Debug.Log("IM HIT IM HIT");
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        }
+    }
+
+    void OnTriggerEnter(Collider collision)
+    {
+        Debug.Log("WTF RING BUT TRIGGERED");
+        if (collision.tag != "ring") {
+            //this is the cylinder
+            score += 1;
+            var text = GameObject.Find("Score").GetComponent<Text>();
+            text.text = "Score: " + score;
+        }
+        Destroy(collision.gameObject);
     }
 }
