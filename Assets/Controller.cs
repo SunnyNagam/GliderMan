@@ -11,12 +11,15 @@ public class Controller : MonoBehaviour
     public float grav = 1f, velTransfer = 0.85f, startPush = 500f, tiltRate = 0.9f;
     private float activeForwardSpeed, activeStrafeSpeed, activeHoverSpeed;
     private float forwardAcceleration = 2.5f, strafeAcceleration = 2f, hoverAcceleration = 2f;
+
     public Transform pen;
+    public float penMinX, penMaxX, penMinY, penMaxY;
+
     private Transform last;
     public Vector3 penPos;
 
     private float lookRateSpeed = 90f;
-    private Vector2 lookInput, screenCenter;
+    private Vector2 lookInput, screenCenter, penCenter;
 
     public int score = 0;
     public int missed = 0;
@@ -36,6 +39,8 @@ public class Controller : MonoBehaviour
         body = GetComponent<Rigidbody>();
         screenCenter.x = Screen.width * 0.5f;
         screenCenter.y = Screen.height * 0.5f;
+        penCenter.x = (penMaxX - penMinX) * 0.5f;
+        penCenter.y = (penMaxY - penMinY) * 0.5f;
         body.AddForce(transform.forward * startPush);
         last = pen;
 
@@ -56,11 +61,17 @@ public class Controller : MonoBehaviour
         lookInput.x = Input.mousePosition.x;
         lookInput.y = Input.mousePosition.y;
 
+        //lookInput.x = p.x;
+        //lookInput.y = p.y;
+
         // float roll = penPos.x / 5;
         // float tilt = penPos.y / 5;
 
         float roll = (invertHorizontal? 1 : -1) * (lookInput.x - screenCenter.x) / screenCenter.x;
         float tilt = (invertVertical? 1 : -1) * (lookInput.y - screenCenter.y) / screenCenter.y;
+
+        //roll = (invertHorizontal? 1 : -1) * (lookInput.x - penCenter.x) / penCenter.x;
+        //tilt = (invertVertical? 1 : -1) * (lookInput.y - penCenter.y) / penCenter.y;
 
 
         if (body.velocity.magnitude < 1.5){
