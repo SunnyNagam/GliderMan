@@ -17,7 +17,17 @@ public class Controller : MonoBehaviour
 
     private float lookRateSpeed = 90f;
     private Vector2 lookInput, screenCenter;
+
     public int score = 0;
+    public int missed = 0;
+    public float time = 0f;
+
+    private Text missedText;
+    private Text scoreText;
+    private Text timer;
+
+    public bool invertVertical = true;
+    public bool invertHorizontal = true;
 
 
     // Start is called before the first frame update
@@ -28,11 +38,17 @@ public class Controller : MonoBehaviour
         screenCenter.y = Screen.height * 0.5f;
         body.AddForce(transform.forward * startPush);
         last = pen;
+
+        missedText = GameObject.Find("Missed").GetComponent<Text>();
+        scoreText = GameObject.Find("Score").GetComponent<Text>();
+        timer = GameObject.Find("Timer").GetComponent<Text>();
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
+        time += Time.deltaTime;
+        timer.text = time.ToString("0.00s");
 
         Vector3 p = pen.position;
         penPos = transform.position - p;
@@ -43,8 +59,9 @@ public class Controller : MonoBehaviour
         // float roll = penPos.x / 5;
         // float tilt = penPos.y / 5;
 
-        float roll = (lookInput.x - screenCenter.x) / screenCenter.x;
-        float tilt = (lookInput.y - screenCenter.y) / screenCenter.y;
+        float roll = (invertHorizontal? 1 : -1) * (lookInput.x - screenCenter.x) / screenCenter.x;
+        float tilt = (invertVertical? 1 : -1) * (lookInput.y - screenCenter.y) / screenCenter.y;
+
 
         if (body.velocity.magnitude < 1.5){
             //tilt += tiltRate * Time.deltaTime;
@@ -82,23 +99,22 @@ public class Controller : MonoBehaviour
     void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.tag == "ring") {
-            Debug.Log("RING");
             Physics.IgnoreCollision(collision.collider, GetComponent<Collider>());
         }
         else {
-            Debug.Log("IM HIT IM HIT");
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            time = 0f;
+            score = missed = 0;
         }
     }
 
     void OnTriggerEnter(Collider collision)
     {
-        Debug.Log("WTF RING BUT TRIGGERED");
-        if (collision.tag != "ring") {
+        if (collision.tag == "missed") {
+            missedText.text = "Missed: " + ++missed;
+        } else if (collision.tag == "inside ring") {
             //this is the cylinder
-            score += 1;
-            var text = GameObject.Find("Score").GetComponent<Text>();
-            text.text = "Score: " + score;
+            scoreText.text = "Score: " + ++score;
         }
         Destroy(collision.gameObject);
     }

@@ -6,10 +6,10 @@ public class PlaceRings : MonoBehaviour
 {
     public Transform startAt;
     public Transform buildToward;
-    public double spread = 5;
-    public double spacing = 100;
-    public double noiseResolution = 0.1;
-    public double xyzSeparation = 1.5;
+    public float spread = 5.0f;
+    public float spacing = 100f;
+    public float noiseResolution = 0.1f;
+    public float xyzSeparation = 1.5f;
     public int maxRings = 10;
 
     // Start is called before the first frame update

@@ -6,6 +6,8 @@ TagManager:
   tags:
   - Touchable
   - ring
+  - missed
+  - inside ring
   layers:
   - Default
   - TransparentFX
